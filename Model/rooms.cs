@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Basic_Connections
+namespace Basic_Connections.Model
 {
     public class rooms
     {

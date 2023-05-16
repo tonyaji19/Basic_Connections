@@ -1,6 +1,4 @@
-﻿
-
-using Basic_Connections;
+﻿using Basic_Connections.Config;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
@@ -8,20 +6,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Basic_Connections
+namespace Basic_Connections.Model
 {
     public class profilings
     {
         public string employee_id { get; set; }
         public int education { get; set; }
 
-        private static readonly string connectionString =
-            "Data Source=TONYAJI;Database=db_employee;Integrated Security=True;Connect Timeout=30;Encrypt=False;";
-
-        public static List<profilings> GetProfilings()
+        public List<profilings> GetProfilings()
         {
             var profiling = new List<profilings>();
-            using SqlConnection connection = new SqlConnection(connectionString);
+            using SqlConnection connection = MyConnection.Get();
             try
             {
                 SqlCommand command = new SqlCommand();
@@ -54,10 +49,10 @@ namespace Basic_Connections
             return new List<profilings>();
         }
 
-        public static int InsertProfiling(profilings profilings)
+        public int InsertProfiling(profilings profilings)
         {
             int result = 0;
-            using var connection = new SqlConnection(connectionString);
+            using var connection = MyConnection.Get();
             connection.Open();
             var employee = new employees();
             var education = new Educations();

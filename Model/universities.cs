@@ -1,5 +1,6 @@
 ﻿
 
+using Basic_Connections.Config;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -7,21 +8,21 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Basic_Connections.Config;
 
-namespace Basic_Connections
+
+namespace Basic_Connections.Model
 {
     public class universities
     {
         public int id { get; set; }
         public string name { get; set; }
 
-        private static readonly string connectionString =
-         "Data Source=TONYAJI;Database=db_employee;Integrated Security=True;Connect Timeout=30;Encrypt=False;";
-
-        public static int InsertUniversity(universities university)
+        
+        public int InsertUniversity(universities university)
         {
             int result = 0;
-            using var connection = new SqlConnection(connectionString);
+            using var connection = MyConnection.Get();
             connection.Open();
 
             SqlTransaction transaction = connection.BeginTransaction();
@@ -56,10 +57,10 @@ namespace Basic_Connections
             return result;
         }
 
-        public static List<universities> GetUniversities()
+        public List<universities> GetUniversities()
         {
             var universities = new List<universities>();
-            using SqlConnection connection = new SqlConnection(connectionString);
+            using SqlConnection connection = MyConnection.Get();
             try
             {
                 SqlCommand command = new SqlCommand();
@@ -92,10 +93,10 @@ namespace Basic_Connections
             return new List<universities>();
         }
 
-        public static int UpdateUniversity(universities university)
+        public int UpdateUniversity(universities university)
         {
             int result = 0;
-            using var connection = new SqlConnection(connectionString);
+            using var connection = MyConnection.Get();
             connection.Open();
 
             SqlTransaction transaction = connection.BeginTransaction();
@@ -133,10 +134,10 @@ namespace Basic_Connections
             return result;
         }
 
-        public static int DeleteUniversity(universities university)
+        public int DeleteUniversity(universities university)
         {
             int result = 0;
-            using var connection = new SqlConnection(connectionString);
+            using var connection = MyConnection.Get();
             connection.Open();
 
             SqlTransaction transaction = connection.BeginTransaction();

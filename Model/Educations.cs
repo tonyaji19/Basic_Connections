@@ -7,9 +7,9 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Basic_Connections;
+using Basic_Connections.Config;
 
-namespace Basic_Connections
+namespace Basic_Connections.Model
 {
     public class Educations
     {
@@ -19,13 +19,10 @@ namespace Basic_Connections
         public string gpa { get; set; }
         public int university_id { get; set; }
 
-        private static readonly string connectionString =
-        "Data Source=TONYAJI;Database=db_employee;Integrated Security=True;Connect Timeout=30;Encrypt=False;";
-
-        public static int InsertEducation(Educations educations)
+        public int InsertEducation(Educations educations)
         {
             int result = 0;
-            using var connection = new SqlConnection(connectionString);
+            using var connection = MyConnection.Get();
             connection.Open();
 
             SqlTransaction transaction = connection.BeginTransaction();
@@ -80,10 +77,10 @@ namespace Basic_Connections
             return result;
         }
 
-        public static int InsertEducationId(Educations educations)
+        public int InsertEducationId(Educations educations)
         {
             int result = 0;
-            using var connection = new SqlConnection(connectionString);
+            using var connection = MyConnection.Get();
             connection.Open();
             var university = new universities();
             SqlTransaction transaction = connection.BeginTransaction();
@@ -138,10 +135,10 @@ namespace Basic_Connections
             return result;
         }
 
-        public static List<Educations> GetEducation()
+        public List<Educations> GetEducation()
         {
             var educations = new List<Educations>();
-            using SqlConnection connection = new SqlConnection(connectionString);
+            using SqlConnection connection = MyConnection.Get();
             try
             {
                 SqlCommand command = new SqlCommand();
@@ -177,10 +174,10 @@ namespace Basic_Connections
             return new List<Educations>();
         }
 
-        public static int UpdateEducation(Educations education)
+        public int UpdateEducation(Educations education)
         {
             int result = 0;
-            using var connection = new SqlConnection(connectionString);
+            using var connection = MyConnection.Get();
             connection.Open();
 
             SqlTransaction transaction = connection.BeginTransaction();
@@ -233,10 +230,10 @@ namespace Basic_Connections
             return result;
         }
 
-        public static int DeleteEducation(Educations educations)
+        public int DeleteEducation(Educations educations)
         {
             int result = 0;
-            using var connection = new SqlConnection(connectionString);
+            using var connection = MyConnection.Get();
             connection.Open();
 
             SqlTransaction transaction = connection.BeginTransaction();

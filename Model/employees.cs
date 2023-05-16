@@ -6,14 +6,12 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Basic_Connections;
+using Basic_Connections.Config;
 
-namespace Basic_Connections
+namespace Basic_Connections.Model
 {
     public class employees
     {
-        private static readonly string connectionString =
-    "Data Source=TONYAJI;Database=db_employee;Integrated Security=True;Connect Timeout=30;Encrypt=False;";
         public string id { get; set; }
         public string nik { get; set; }
         public string first_name { get; set; }
@@ -25,10 +23,10 @@ namespace Basic_Connections
         public string phone_number { get; set; }
         public string department { get; set; }
 
-        public static List<employees> GetAllEmployee()
+        public List<employees> GetAllEmployee()
         {
             var employee = new List<employees>();
-            using SqlConnection connection = new SqlConnection(connectionString);
+            using SqlConnection connection = MyConnection.Get();
             try
             {
                 SqlCommand command = new SqlCommand();
@@ -68,10 +66,10 @@ namespace Basic_Connections
             }
             return new List<employees>();
         }
-        public static int InsertEmployee(employees employees)
+        public int InsertEmployee(employees employees)
         {
             int result = 0;
-            using var connection = new SqlConnection(connectionString);
+            using var connection = MyConnection.Get();
             connection.Open();
 
             SqlTransaction transaction = connection.BeginTransaction();
@@ -163,9 +161,9 @@ namespace Basic_Connections
         }
 
 
-        public static string GetEmpId(string NIK)
+        public string GetEmpId(string NIK)
         {
-            using SqlConnection connection = new SqlConnection(connectionString);
+            using SqlConnection connection = MyConnection.Get();
             connection.Open();
 
             SqlCommand command = new SqlCommand("SELECT id FROM tb_m_employees WHERE nik=(@NIK)", connection);
@@ -181,9 +179,9 @@ namespace Basic_Connections
             return lastEmpId;
         }
 
-        public static int GetUnivEduId(int choice)
+        public int GetUnivEduId(int choice)
         {
-            using var connection = new SqlConnection(connectionString);
+            using var connection = MyConnection.Get();
             connection.Open();
             if (choice == 1)
             {
@@ -204,7 +202,7 @@ namespace Basic_Connections
                 return id;
             }
         }
-        public static void PrintOutEmployee()
+        public void PrintOutEmployee(universities universities, Educations educations, profilings profilings)
         {
             var employee = new employees();
             var profiling = new profilings();
@@ -264,7 +262,7 @@ namespace Basic_Connections
 
             universities.InsertUniversity(university);
             education.university_id = GetUnivEduId(1);
-            Educations.InsertEducation(education);
+            educations.InsertEducation(education);
 
             profiling.employee_id = GetEmpId(niks);
             profiling.education = GetUnivEduId(2);
@@ -273,62 +271,67 @@ namespace Basic_Connections
         }
         public void GetDepartment()
         {
-     
-                Console.WriteLine("Id: " +id);
-                Console.WriteLine("Nik: " +nik);
-                Console.WriteLine("First Name: " +first_name);
-                Console.WriteLine("Last Name: " +last_name);
-                Console.WriteLine("Birth date: " +birthdate);
-                Console.WriteLine("Gender: " +gender);
-                Console.WriteLine("Hiring date: " +hiring_date);
-                Console.WriteLine("Email: " +email);
-                Console.WriteLine("Phone Number: " +phone_number);
-                Console.WriteLine("Department: " +department);
-                Console.WriteLine("-----------------------------------------");
+
+            Console.WriteLine("Id: " + id);
+            Console.WriteLine("Nik: " + nik);
+            Console.WriteLine("First Name: " + first_name);
+            Console.WriteLine("Last Name: " + last_name);
+            Console.WriteLine("Birth date: " + birthdate);
+            Console.WriteLine("Gender: " + gender);
+            Console.WriteLine("Hiring date: " + hiring_date);
+            Console.WriteLine("Email: " + email);
+            Console.WriteLine("Phone Number: " + phone_number);
+            Console.WriteLine("Department: " + department);
+            Console.WriteLine("-----------------------------------------");
         }
-        public static void GetAllJoin()
+        public void GetAllJoin(Educations educations, profilings profilings, universities universities)
         {
-        var educationGet = Educations.GetEducation();
-        var employeeGet = employees.GetAllEmployee();
-        var profilingGet = profilings.GetProfilings();
-        var universityGet = universities.GetUniversities();
+            var educationGet = educations.GetEducation();
+            var employeeGet = GetAllEmployee();
+            var profilingGet = profilings.GetProfilings();
+            var universityGet = universities.GetUniversities();
 
-        var getAll = from emp in employeeGet
-                     join pro in profilingGet on emp.id equals pro.employee_id
-                     join edu in educationGet on pro.education equals edu.id
-                     join uni in universityGet on edu.university_id equals uni.id
-                     select new
-                     {
-                         NIK = emp.nik,
-                         Fullname = emp.first_name + " " + emp.last_name,
-                         Birthdate = emp.birthdate,
-                         Gender = emp.gender,
-                         HiringDate = emp.hiring_date,
-                         Email = emp.email,
-                         PhoneNumber = emp.phone_number,
-                         Major = edu.major,
-                         Degree = edu.degree,
-                         GPA = edu.gpa,
-                         Univesity = uni.name
-                     };
+            var getAll = from emp in employeeGet
+                         join pro in profilingGet on emp.id equals pro.employee_id
+                         join edu in educationGet on pro.education equals edu.id
+                         join uni in universityGet on edu.university_id equals uni.id
+                         select new
+                         {
+                             NIK = emp.nik,
+                             Fullname = emp.first_name + " " + emp.last_name,
+                             Birthdate = emp.birthdate,
+                             Gender = emp.gender,
+                             HiringDate = emp.hiring_date,
+                             Email = emp.email,
+                             PhoneNumber = emp.phone_number,
+                             Major = edu.major,
+                             Degree = edu.degree,
+                             GPA = edu.gpa,
+                             Univesity = uni.name
+                         };
 
-                    foreach (var get in getAll)
-                    {
-                        Console.WriteLine($"NIK         = {get.NIK}");
-                        Console.WriteLine($"Fullname    = {get.Fullname}");
-                        Console.WriteLine($"Birthdate   = {get.Birthdate}");
-                        Console.WriteLine($"Gender      = {get.Gender}");
-                        Console.WriteLine($"HiringDate  = {get.HiringDate}");
-                        Console.WriteLine($"Email       = {get.Email}");
-                        Console.WriteLine($"PhoneNumber = {get.PhoneNumber}");
-                        Console.WriteLine($"Major       = {get.Major}");
-                        Console.WriteLine($"Degree      = {get.Degree}");
-                        Console.WriteLine($"GPA         = {get.GPA}");
-                        Console.WriteLine($"Univesity   = {get.Univesity}");
-                        Console.WriteLine("-------------------------------------------------------");
+            foreach (var get in getAll)
+            {
+                Console.WriteLine($"NIK         = {get.NIK}");
+                Console.WriteLine($"Fullname    = {get.Fullname}");
+                Console.WriteLine($"Birthdate   = {get.Birthdate}");
+                Console.WriteLine($"Gender      = {get.Gender}");
+                Console.WriteLine($"HiringDate  = {get.HiringDate}");
+                Console.WriteLine($"Email       = {get.Email}");
+                Console.WriteLine($"PhoneNumber = {get.PhoneNumber}");
+                Console.WriteLine($"Major       = {get.Major}");
+                Console.WriteLine($"Degree      = {get.Degree}");
+                Console.WriteLine($"GPA         = {get.GPA}");
+                Console.WriteLine($"Univesity   = {get.Univesity}");
+                Console.WriteLine("-------------------------------------------------------");
 
-                    }
+            }
+        }
+
+        internal void PrintOutEmployee(universities universities, object educations, profilings profilings)
+        {
+            throw new NotImplementedException();
         }
     }
-    }
+}
 
